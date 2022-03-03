@@ -19,7 +19,7 @@ export default function Routes() {
             <Nav />
             <Switch>
                 <Route exact path="/" component={App} />
-                <Route exact path="/shop" render={() => (<Shop productArray={sendToCart} />)} />
+                <Route exact path="/shop" render={() => (<Shop productArray={sendToCart} resendPrevProducts={cartProducts} />)} />
                 <Route exact path="/cart" render={() => (<Cart cartProducts={cartProducts} />)} />
                 <Route exact path="/product" component={Product} />
             </Switch>

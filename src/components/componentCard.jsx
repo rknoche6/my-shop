@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-export default function ComponentCard({ data, onAdd }) {
+export default function ComponentCard({ data, onAdd, resendPrevProducts }) {
 
     const [addProduct, setAddProduct] = useState([]);
 
@@ -15,13 +15,33 @@ export default function ComponentCard({ data, onAdd }) {
     function createComponentCard(product) {
         function handleAdd() {
             setAddProduct((prev) => {
-                if (prev.includes(product)) {
-                    return prev
-                } else {
-                    return [...prev, product]
+                if (prev.includes(product) && resendPrevProducts.length === 0) {
+                    console.log("condition 1")
+                    return prev;
+                } else if (!prev.includes(product) && resendPrevProducts.length === 0) {
+                    console.log("condition 2")
+                    return [...prev, product];
+                } else if (prev.length === 0 && resendPrevProducts.includes(product)) {
+                    console.log("condition 3")
+                    return resendPrevProducts;
+                } else if (prev.length === 0 && !resendPrevProducts.includes(product)) {
+                    console.log("condition 4")
+                    return [...resendPrevProducts, product];
+                } else if (prev.includes(product) && resendPrevProducts.includes(product)) {
+                    console.log("condition 5")
+                    return prev;
+                } else if (prev.includes(product) && !resendPrevProducts.includes(product)) {
+                    console.log("condition 6")
+                    return prev;
+                } else if (!prev.includes(product) && resendPrevProducts.includes(product)) {
+                    console.log("condition 7")
+                    return resendPrevProducts;
+                } else if (!prev.includes(product) && !resendPrevProducts.includes(product)) {
+                    console.log("condition 8")
+                    console.log({ "prev": prev, "prevCart": resendPrevProducts });
+                    return [...prev, product];
                 }
             })
-
         }
 
         return (
@@ -38,7 +58,8 @@ export default function ComponentCard({ data, onAdd }) {
             </div>
         )
     }
-    console.log(addProduct)
+
+
     return (
         <div className="component-card">
             {data.map(createComponentCard)}

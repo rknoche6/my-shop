@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import LoadingScreen from './loadingScreen';
 import ComponentCard from './componentCard';
 
-export default function Shop({ productArray }) {
+export default function Shop({ productArray, resendPrevProducts }) {
 
     const [loading, setLoading] = useState(true);
     const [fetchedData, setFetchedData] = useState(null);
@@ -36,7 +36,7 @@ export default function Shop({ productArray }) {
 
     return (
         <div className="shop-container">
-            {loading ? <LoadingScreen /> : <ComponentCard data={fetchedData} onAdd={addToCart} />}
+            {loading ? <LoadingScreen /> : <ComponentCard data={fetchedData} onAdd={addToCart} resendPrevProducts={resendPrevProducts} />}
         </div>
     )
 }
