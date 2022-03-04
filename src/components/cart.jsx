@@ -3,13 +3,8 @@ import React, { useState } from 'react';
 export default function Cart({ cartProducts }) {
 
     const ids = cartProducts.map(object => object.id)
-
     const [filteredCart, setFilteredCart] = useState(cartProducts.filter(({ id }, index) => !ids.includes(id, index + 1)));
     const [itemQuantityState, setItemQuantityState] = useState(1);
-
-    function deleteItem(itemId) {
-        setFilteredCart(filteredCart.filter((item) => Number(item.id) !== Number(itemId)))
-    }
 
     function createCard(product) {
         return (
@@ -17,18 +12,23 @@ export default function Cart({ cartProducts }) {
         )
     }
 
-    function itemQuantity(itemQuantity) {
-        console.log(itemQuantity)
-
-    }
-    function createBillingDetails(billingItem) {
+    function createBillingDetails(billingDetails) {
         return (
-            <div className="billing-details" key={billingItem.id}>
-                <div className="billing-quantity">{billingItem.quantity}</div>
-                <div className="billing-item">{billingItem.title.length < 30 ? billingItem.title : `${billingItem.title.slice(0, 30)}...`}</div>
-                <div className="billing-price">$ {billingItem.price}</div>
-            </div>
+            <CreateBillingComponent billingItem={billingDetails} itemQuantity={itemQuantityState} key={billingDetails.id} />
         )
+    }
+
+    function calculateTotal() {
+        return filteredCart.reduce((acc, curr) => acc + curr.price, 0)
+    }
+
+    function deleteItem(itemId) {
+        setFilteredCart(filteredCart.filter((item) => Number(item.id) !== Number(itemId)))
+    }
+
+    function itemQuantity(itemQuantity) {
+        setItemQuantityState(itemQuantity)
+        // console.log(itemQuantityState);
     }
 
     return (
@@ -46,12 +46,18 @@ export default function Cart({ cartProducts }) {
                         <div className="billing-price">Price</div>
                     </div>
                     {filteredCart.map(createBillingDetails)}
+                    <div className="billing-total-row">
+                        <div className="billing-total-heading">Total</div>
+                        <div className="billing-total-amount">{calculateTotal()}</div>
+                    </div>
                 </div>
             }
 
         </div>
     )
 }
+
+
 
 export function CreateComponentCard({ product, itemToDelete, itemQuantity }) {
 
@@ -60,11 +66,10 @@ export function CreateComponentCard({ product, itemToDelete, itemQuantity }) {
     // An object to pass product details to Parent Component cart.jsx
     // itemDetails({ "title": product.title, "quantity": quantity, "price": product.price });
 
-    itemQuantity({ "quantity": quantity, "id": product.id })
-
     function decrement(e) {
         if (quantity > 1) {
-            return setQuantity(prev => prev - 1);
+            itemQuantity({ "quantity": quantity, "id": product.id, "operation": "decrease" })
+            setQuantity(prev => prev - 1);
         } else if (quantity === 1) {
             // Remove if quantity is 1 will be implemented later
             const productId = e.target.id;
@@ -73,6 +78,7 @@ export function CreateComponentCard({ product, itemToDelete, itemQuantity }) {
 
     }
     function increment() {
+        itemQuantity({ "quantity": quantity, "id": product.id, "operation": "increase" })
         return setQuantity(prev => prev + 1);
     }
     return (
@@ -90,6 +96,27 @@ export function CreateComponentCard({ product, itemToDelete, itemQuantity }) {
                 <p className="product-quantity">{quantity}</p>
                 <button className="quantity-button" onClick={increment}>+</button>
             </div>
+        </div>
+    )
+}
+
+
+
+export function CreateBillingComponent({ billingItem, itemQuantity }) {
+
+    if (itemQuantity.id === billingItem.id && itemQuantity.operation === "increase") {
+        billingItem.quantity = (itemQuantity.quantity) + 1;
+
+    } else if (itemQuantity.id === billingItem.id && itemQuantity.operation === "decrease") {
+        billingItem.quantity = (itemQuantity.quantity) - 1;
+
+    }
+
+    return (
+        <div className="billing-details" key={billingItem.id}>
+            <div className="billing-quantity">{billingItem.quantity || 1}</div>
+            <div className="billing-item">{billingItem.title.length < 30 ? billingItem.title : `${billingItem.title.slice(0, 30)}...`}</div>
+            <div className="billing-price">$ {Math.round(((billingItem.price * (billingItem.quantity || 1)) + Number.EPSILON) * 100) / 100}</div>
         </div>
     )
 }

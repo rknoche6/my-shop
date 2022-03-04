@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import App from "./components/app";
 import Shop from "./components/shop";
 import Nav from "./components/nav";
@@ -15,7 +15,7 @@ export default function Routes() {
     }
 
     return (
-        <BrowserRouter>
+        <Router basename={process.env.PUBLIC_URL}>
             <Nav />
             <Switch>
                 <Route exact path="/" component={App} />
@@ -23,6 +23,6 @@ export default function Routes() {
                 <Route exact path="/cart" render={() => (<Cart cartProducts={cartProducts} />)} />
                 <Route exact path="/product" component={Product} />
             </Switch>
-        </BrowserRouter>
+        </Router>
     )
 }
